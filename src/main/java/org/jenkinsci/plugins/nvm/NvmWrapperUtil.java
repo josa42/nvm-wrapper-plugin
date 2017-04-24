@@ -37,12 +37,17 @@ public class NvmWrapperUtil {
       isNvmInstalled();
     }
 
+    int randomNum = 0 + (int)(Math.random() * 100000);
+
+    String beforeEnvPath = "before-" + randomNum +  ".env";
+    String afterEnvPath = "after-" + randomNum +  ".env";
+
     ArgumentListBuilder beforeCmd = new ArgumentListBuilder();
     beforeCmd.add("bash");
     beforeCmd.add("-c");
-    beforeCmd.add("export > before.env");
+    beforeCmd.add("export > " + beforeEnvPath);
 
-    Map<String, String> beforeEnv = toMap(getExport(beforeCmd, "before.env"));
+    Map<String, String> beforeEnv = toMap(getExport(beforeCmd, beforeEnvPath));
 
     ArgumentListBuilder nvmSourceCmd = new ArgumentListBuilder();
     nvmSourceCmd.add("bash");
@@ -50,9 +55,10 @@ public class NvmWrapperUtil {
     nvmSourceCmd.add(" source " + nvmPath +
       " && nvm install " + version +
       " && nvm use "+ version +
-      " && export > nvm.env");
+      " && export > " + afterEnvPath
+    );
 
-    Map<String, String> afterEnv = toMap(getExport(nvmSourceCmd, "nvm.env"));
+    Map<String, String> afterEnv = toMap(getExport(nvmSourceCmd, afterEnvPath));
 
     Map<String, String> newEnvVars = new HashMap<String, String>();
 
@@ -66,6 +72,7 @@ public class NvmWrapperUtil {
             .collect(Collectors.joining(File.pathSeparator));
           newEnvVars.put("PATH", afterEnv.get("PATH"));
           newEnvVars.put("PATH+NVM", path);
+
         } else {
           newEnvVars.put(k, v);
         }
@@ -86,8 +93,12 @@ public class NvmWrapperUtil {
       new AbortException("Failed to fork bash ");
     }
 
-    return build.getWorkspace().child(destFile).readToString();
+    hudson.FilePath file = build.getWorkspace().child(destFile);
+    String content = file.readToString();
 
+    file.delete();
+
+    return content;
   }
 
   private Boolean isNvmInstalled() {
@@ -102,6 +113,7 @@ public class NvmWrapperUtil {
       args.add("-c");
       args.add("test -f " + path);
       Integer statusCode = -1;
+
       try {
         statusCode = launcher.launch().cmds(args)
           .stdout(listener.getLogger())
