@@ -18,23 +18,16 @@ apply plugin: 'org.jenkins-ci.jpi'
 group = "org.jenkins-ci.plugins"
 version = "0.1.1"
 description = "NVM wrapper plugin"
-archivesBaseName = "nvm-wrapper"
+archivesBaseName = "nvm-wrapper-fork"
 
 sourceCompatibility = '1.8'
 
 jenkinsPlugin {
   coreVersion = '1.609.1'
-  displayName = 'nvm wrapper'
-  shortName = 'nvm-wrapper'
-  url = "https://wiki.jenkins-ci.org/display/JENKINS/Nvm+Wrapper+Plugin"
-  gitHubUrl = "https://github.com/gextech/jenkins-nvm-plugin"
-  developers {
-    developer {
-      id 'atoms'
-      name 'Tomas Salazar'
-      email 'atomsmail+jenkins@gmail.com'
-    }
-  }
+  displayName = 'nvm wrapper fork'
+  shortName = 'nvm-wrapper-fork'
+  url = "https://github.com/josa42/jenkins-nvm-plugin"
+  gitHubUrl = "https://github.com/josa42/jenkins-nvm-plugin"
 }
 compileJava {
   options.encoding = 'UTF-8'
